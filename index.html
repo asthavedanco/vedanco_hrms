@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vedanco Group Business Suite</title>
+    <link rel="icon" type="image/png" href="assets/images/favicon.png">
+    <link rel="stylesheet" href="css/main.css">
+    <!-- Google Fonts: Plus Jakarta Sans & Outfit -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Phosphor Icons for minimalist iconography -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+</head>
+<body>
+    <!-- Login Screen Overlay -->
+    <div class="login-screen" id="login-screen">
+        <div class="login-card card">
+            <div class="logo" style="justify-content: center; margin-bottom: 2rem;">
+                <img src="https://placehold.co/200x50/1e472c/FFF.png?text=Vedanco+Group" id="login-logo" alt="Vedanco Logo" class="logo-image" style="width:100%; max-width:200px; display:block;">
+            </div>
+            <div class="form-group" style="margin-bottom: 0.5rem;">
+                <label>Login As</label>
+                <select class="form-control" id="login-user-select" style="padding: 0.75rem; font-size: 1rem;">
+                    <!-- JS Injected Users -->
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Password</label>
+                <div class="password-input-container">
+                    <input type="password" id="login-password" class="form-control" style="padding: 0.75rem; padding-right: 2.5rem; font-size: 1rem;" placeholder="Enter password...">
+                    <button type="button" class="toggle-password-btn" data-target="login-password" title="Show/Hide Password"><i class="ph ph-eye"></i></button>
+                </div>
+            </div>
+            <button class="primary-btn w-100" id="login-btn" style="padding: 0.75rem; font-size: 1rem; margin-top: 1rem;">Enter Workspace</button>
+        </div>
+    </div>
+
+    <div class="app-container" id="app-container" style="display: none;">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <div class="logo">
+                <img src="https://placehold.co/200x50/1e472c/FFF.png?text=Vedanco+Group" id="sidebar-logo" alt="Vedanco Logo" class="logo-image">
+            </div>
+            <nav class="nav-menu">
+                <a href="#dashboard" class="nav-item active" data-target="dashboard" id="nav-dashboard">
+                    <i class="ph ph-squares-four"></i> Dashboard
+                </a>
+                <a href="#crm" class="nav-item admin-only" data-target="crm" id="nav-crm">
+                    <i class="ph ph-users"></i> CRM & Leads
+                </a>
+                <a href="#hr" class="nav-item" data-target="hr" id="nav-hr">
+                    <i class="ph ph-identification-card"></i> HR & Attendance
+                </a>
+                <a href="#leave" class="nav-item" data-target="leave" id="nav-leave">
+                    <i class="ph ph-calendar-x"></i> Leaves
+                </a>
+                <a href="#tasks" class="nav-item" data-target="tasks" id="nav-tasks">
+                    <i class="ph ph-check-square"></i> Task Manager
+                </a>
+                <a href="#projects" class="nav-item" data-target="projects" id="nav-projects">
+                    <i class="ph ph-briefcase"></i> Projects
+                </a>
+                <a href="#time" class="nav-item" data-target="time" id="nav-time">
+                    <i class="ph ph-timer"></i> Time Tracking
+                </a>
+                <a href="#chat" class="nav-item" data-target="chat" id="nav-chat">
+                    <i class="ph ph-chat-teardrop-dots"></i> Team Chat
+                </a>
+            </nav>
+            <div class="user-profile-container">
+                <div class="user-profile" id="user-profile-toggle" title="Click to Log Out">
+                    <img src="" alt="User Avatar" class="avatar" id="current-user-avatar">
+                    <div class="user-info">
+                        <p class="user-name" id="current-user-name">User</p>
+                        <p class="user-role" id="current-user-role">Role</p>
+                    </div>
+                    <i class="ph ph-sign-out" style="margin-left: auto; color: var(--color-danger);"></i>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content Wrapper -->
+        <main class="main-content">
+            <!-- Header -->
+            <header class="top-header">
+                <div class="header-search">
+                    <i class="ph ph-magnifying-glass"></i>
+                    <input type="text" placeholder="Search across Vedanco Suite...">
+                </div>
+                <div class="header-actions">
+                    <span class="view-pill" id="view-pill">Admin Mode</span>
+                    <div style="position: relative; display: inline-block;">
+                        <button class="action-btn" id="header-bell-btn" style="position: relative;">
+                            <i class="ph ph-bell"></i>
+                            <span id="notification-badge" style="display: none; position: absolute; top: -5px; right: -5px; background: var(--color-danger); color: white; border-radius: 50%; width: 16px; height: 16px; font-size: 0.65rem; align-items: center; justify-content: center; font-weight: bold; line-height: 1;">0</span>
+                        </button>
+                        <!-- Notifications Dropdown -->
+                        <div class="notifications-dropdown" id="notifications-dropdown">
+                            <div class="notifications-header">
+                                <h3>Notifications</h3>
+                                <span style="font-size: 0.75rem; color: var(--text-muted);" id="unread-count-text">0 unread</span>
+                            </div>
+                            <div class="notifications-list" id="notifications-list">
+                                <!-- Populated by JS -->
+                            </div>
+                            <div class="notifications-footer">
+                                <button id="btn-clear-notifications">Clear All</button>
+                            </div>
+                        </div>
+                    </div>
+                    <button class="action-btn" id="header-settings-btn" title="Profile Settings"><i class="ph ph-gear"></i></button>
+                </div>
+            </header>
+
+            <!-- Dynamic Views Container -->
+            <div class="views-container">
+                <!-- Dashboard View -->
+                <section id="dashboard" class="view active-view">
+                    <header class="view-header">
+                        <div>
+                            <h1>Dashboard</h1>
+                            <p id="dashboard-subtitle">Welcome back! Here's what's happening today.</p>
+                        </div>
+                    </header>
+                    <div class="dashboard-content" id="dashboard-content">
+                        <!-- Stats grid rendered by JS -->
+                        <div class="stats-grid" id="dashboard-stats-grid">
+                            <!-- JS -->
+                        </div>
+
+                        <div class="dashboard-split" id="dashboard-split-layout">
+                            <div class="split-main card" id="dashboard-main-card">
+                                <div class="card-header">
+                                    <h2 id="dashboard-table-title">Team Directory</h2>
+                                </div>
+                                <div class="table-responsive">
+                                    <table class="data-table" id="dashboard-table">
+                                        <!-- JS -->
+                                    </table>
+                                </div>
+                            </div>
+                            <div class="split-sidebar card" id="dashboard-sidebar-card">
+                                <div class="card-header">
+                                    <h2 id="dashboard-sidebar-title">Activity Feed</h2>
+                                </div>
+                                <div class="activity-list" id="dashboard-activity-list">
+                                    <!-- JS -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- CRM View -->
+                <section id="crm" class="view">
+                    <header class="view-header">
+                        <div>
+                            <h1>CRM & Leads</h1>
+                            <p>Manage your clients and pipeline.</p>
+                        </div>
+                        <button class="primary-btn" id="open-add-lead-btn"><i class="ph ph-plus"></i> Add Lead</button>
+                    </header>
+                    <div class="crm-content">
+                        <!-- Kanban Board JS Populated -->
+                        <div class="kanban-board" id="crm-kanban-board">
+                        </div>
+                    </div>
+                </section>
+
+                <!-- HR View -->
+                <section id="hr" class="view">
+                    <header class="view-header">
+                        <div>
+                            <h1>HR & Attendance</h1>
+                            <p>Manage leave workflow and attendance logs.</p>
+                        </div>
+                    </header>
+                    <div class="hr-content" id="hr-content-container">
+                        <div class="card">
+                            <div class="card-header" style="display:flex; justify-content:space-between; align-items:center;">
+                                <h2>Attendance & History Log</h2>
+                                <div id="hr-gender-tabs" style="display:none; gap:10px;">
+                                    <button class="primary-btn" id="hr-tab-all" style="background:#1E472C;">All</button>
+                                    <button class="action-btn" id="hr-tab-male" style="border:1px solid #1E472C; border-radius:5px; padding:0.5rem;">Male Employee</button>
+                                    <button class="action-btn" id="hr-tab-female" style="border:1px solid #1E472C; border-radius:5px; padding:0.5rem;">Female Employee</button>
+                                </div>
+                            </div>
+                            <div class="table-responsive">
+                                <table class="data-table" id="hr-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Employee</th>
+                                            <th>Time In</th>
+                                            <th>Time Out</th>
+                                            <th>Status</th>
+                                            <th>Leave Approval</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <!-- Rendered by JS -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                </section>
+
+                <!-- Leave View -->
+                <section id="leave" class="view">
+                    <header class="view-header">
+                        <div>
+                            <h1>Leave Management</h1>
+                            <p>Apply for leaves and track your requests.</p>
+                        </div>
+                    </header>
+                    <div class="leave-content" id="leave-content-container" style="padding: 1.5rem 0;">
+                        <!-- JS renders leaves view -->
+                    </div>
+                </section>
+
+                <!-- Tasks View -->
+                <section id="tasks" class="view">
+                    <header class="view-header">
+                        <div>
+                            <h1>Task Manager</h1>
+                            <p id="tasks-subtitle">Your personal and team tasks.</p>
+                        </div>
+                        <button class="primary-btn" id="open-add-task-btn" style="display:none;"><i class="ph ph-plus"></i> Add Task</button>
+                    </header>
+                    <div class="tasks-content dashboard-split" id="tasks-content">
+                        <!-- JS injected content based on role -->
+                    </div>
+                </section>
+
+                <!-- Projects View -->
+                <section id="projects" class="view">
+                    <header class="view-header">
+                        <div>
+                            <h1 id="projects-title">Projects</h1>
+                            <p id="projects-subtitle">Active Projects across all verticals.</p>
+                        </div>
+                    </header>
+                    <div class="projects-grid">
+                        <!-- Rendered by JS -->
+                    </div>
+                </section>
+
+                <!-- Time View -->
+                <section id="time" class="view">
+                    <header class="view-header">
+                        <div>
+                            <h1>Time Tracking</h1>
+                            <p>Log your hours and track team activity.</p>
+                        </div>
+                    </header>
+                    <div class="time-content" id="time-content-container">
+                        <!-- JS renders specific time tracking view per user -->
+                    </div>
+                </section>
+
+                <!-- Chat View -->
+                <section id="chat" class="view">
+                    <header class="view-header">
+                        <div>
+                            <h1>Team Chat</h1>
+                            <p>Real-time team communication.</p>
+                        </div>
+                    </header>
+                    <div class="chat-container card">
+                        <div class="chat-sidebar">
+                            <div class="chat-section">
+                                <h3>Channels</h3>
+                                <ul class="chat-list">
+                                    <li class="active">#general</li>
+                                    <li>#logistics</li>
+                                    <li>#digital-marketing</li>
+                                    <li>#ai-projects</li>
+                                </ul>
+                            </div>
+                            <div class="chat-section">
+                                <h3>Direct Messages</h3>
+                                <ul class="chat-list">
+                                    <li><span class="status-dot green"></span> Alice Chen</li>
+                                    <li><span class="status-dot green"></span> Charlie Davis</li>
+                                    <li><span class="status-dot gray"></span> Grace Lee</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="chat-main">
+                            <div class="chat-header">
+                                <h2>#general</h2>
+                            </div>
+                            <div class="chat-messages" id="chat-messages">
+                                <div class="message">
+                                    <img src="https://ui-avatars.com/api/?name=Admin+User&background=0D8ABC&color=fff" class="avatar">
+                                    <div class="msg-content">
+                                        <div class="msg-header"><strong>Admin User</strong> <span>9:00 AM</span></div>
+                                        <p>Morning team! Let's get the Q2 priorities sorted today.</p>
+                                    </div>
+                                </div>
+                                <div class="message">
+                                    <img src="https://ui-avatars.com/api/?name=Alice+Chen&background=3B82F6&color=fff" class="avatar">
+                                    <div class="msg-content">
+                                        <div class="msg-header"><strong>Alice Chen</strong> <span>9:05 AM</span></div>
+                                        <p>On it! Setting up the task board now.</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="chat-input-area">
+                                <form id="chat-form">
+                                    <input type="text" id="chat-input" placeholder="Type your message in #general..." autocomplete="off">
+                                    <button type="submit" class="primary-btn"><i class="ph ph-paper-plane-right"></i> Send</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+
+            <!-- Global Modals -->
+            <!-- Add Lead Modal Overlay (Hidden by default) -->
+            <div class="modal-overlay" id="add-lead-modal">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h2>Add New Lead</h2>
+                        <button class="action-btn" id="close-lead-btn"><i class="ph ph-x"></i></button>
+                    </div>
+                    <form class="modal-form">
+                        <div class="form-group">
+                            <label>Lead Title</label>
+                            <input type="text" class="form-control" id="form-lead-title" placeholder="e.g. Server Migration">
+                        </div>
+                        <div class="form-group">
+                            <label>Service Vertical</label>
+                            <select class="form-control" id="form-lead-vertical">
+                                <option value="it">IT</option>
+                                <option value="ai">AI Solutions</option>
+                                <option value="logistics">Logistics</option>
+                                <option value="interior">Interior</option>
+                                <option value="import">Import/Export</option>
+                                <option value="digital">Digital Mkt</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Client Name</label>
+                            <input type="text" class="form-control" id="form-lead-client" placeholder="Company Name">
+                        </div>
+                        <div class="form-actions">
+                            <button type="button" class="primary-btn w-100" id="submit-lead-btn">Create Lead</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Add Task Modal -->
+            <div class="modal-overlay" id="add-task-modal">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h2>Add New Task</h2>
+                        <button class="action-btn" id="close-task-btn"><i class="ph ph-x"></i></button>
+                    </div>
+                    <form class="modal-form">
+                        <div class="form-group">
+                            <label>Task Title</label>
+                            <input type="text" class="form-control" id="form-task-title" placeholder="What needs to be done?">
+                        </div>
+                        <div class="form-actions">
+                            <button type="button" class="primary-btn w-100" id="submit-task-btn">Add Task</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Settings / Profile Management Modal -->
+            <div class="modal-overlay" id="settings-modal">
+                <div class="modal-content" style="max-width: 680px;">
+                    <div class="modal-header">
+                        <h2>Settings</h2>
+                        <button class="action-btn" id="close-settings-btn"><i class="ph ph-x"></i></button>
+                    </div>
+                    <div class="settings-modal-wrapper">
+                        <div class="settings-modal-sidebar">
+                            <button type="button" class="settings-tab-btn active" data-tab="settings-tab-profile">
+                                <i class="ph ph-user"></i> <span>Profile Info</span>
+                            </button>
+                            <button type="button" class="settings-tab-btn" data-tab="settings-tab-photo">
+                                <i class="ph ph-image"></i> <span>Profile Photo</span>
+                            </button>
+                            <button type="button" class="settings-tab-btn" data-tab="settings-tab-email">
+                                <i class="ph ph-envelope"></i> <span>Email Settings</span>
+                            </button>
+                            <button type="button" class="settings-tab-btn" data-tab="settings-tab-password">
+                                <i class="ph ph-key"></i> <span>Change Password</span>
+                            </button>
+                        </div>
+                        <div class="settings-modal-content">
+                            <!-- Profile Tab -->
+                            <div class="settings-tab-panel active" id="settings-tab-profile">
+                                <form class="modal-form" id="settings-form-profile" style="padding: 0;">
+                                    <div class="form-group">
+                                        <label>Full Name</label>
+                                        <input type="text" class="form-control" id="settings-profile-name" required placeholder="Enter full name">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Phone Number</label>
+                                        <input type="text" class="form-control" id="settings-profile-phone" placeholder="e.g. +1 234 567 890">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Job Title / Designation</label>
+                                        <input type="text" class="form-control" id="settings-profile-title" placeholder="e.g. Senior Operations Executive">
+                                    </div>
+                                    <div class="form-actions" style="margin-top: 1.5rem;">
+                                        <button type="submit" class="primary-btn w-100">Save Profile</button>
+                                    </div>
+                                </form>
+                            </div>
+                            <!-- Photo Tab -->
+                            <div class="settings-tab-panel" id="settings-tab-photo">
+                                <div class="avatar-upload-container">
+                                    <img id="settings-photo-preview" src="" class="avatar" style="width: 90px; height: 90px; border-radius: 50%; margin-bottom: 1.25rem; object-fit: cover; border: 2px solid var(--border-color); box-shadow: var(--shadow-sm);">
+                                    <div class="form-group" style="width: 100%; text-align: left;">
+                                        <label>Upload Profile Photo</label>
+                                        <input type="file" id="settings-photo-file" accept="image/*" class="form-control" style="padding: 0.4rem;">
+                                    </div>
+                                    <div class="form-group" style="width: 100%; text-align: left; margin-top: 1rem;">
+                                        <label>Or Image URL</label>
+                                        <input type="text" class="form-control" id="settings-photo-url" placeholder="https://example.com/avatar.jpg">
+                                    </div>
+                                    <div class="form-actions" style="width: 100%; margin-top: 1.5rem;">
+                                        <button type="button" id="settings-photo-save" class="primary-btn w-100">Update Photo</button>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Email Tab -->
+                            <div class="settings-tab-panel" id="settings-tab-email">
+                                <form class="modal-form" id="settings-form-email" style="padding: 0;">
+                                    <div class="form-group">
+                                        <label>Email Address</label>
+                                        <input type="email" class="form-control" id="settings-email-input" required placeholder="name@vedanco.com">
+                                    </div>
+                                    <div class="form-actions" style="margin-top: 1.5rem;">
+                                        <button type="submit" class="primary-btn w-100">Save Email</button>
+                                    </div>
+                                </form>
+                            </div>
+                            <!-- Password Tab -->
+                            <div class="settings-tab-panel" id="settings-tab-password">
+                                <form class="modal-form" id="settings-form-password" style="padding: 0;">
+                                    <div class="form-group">
+                                        <label>Current Password</label>
+                                        <div class="password-input-container">
+                                            <input type="password" class="form-control" id="settings-pwd-current" required placeholder="Enter current password">
+                                            <button type="button" class="toggle-password-btn" data-target="settings-pwd-current" title="Show/Hide Password"><i class="ph ph-eye"></i></button>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>New Password</label>
+                                        <div class="password-input-container">
+                                            <input type="password" class="form-control" id="settings-pwd-new" required placeholder="Enter new password">
+                                            <button type="button" class="toggle-password-btn" data-target="settings-pwd-new" title="Show/Hide Password"><i class="ph ph-eye"></i></button>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Confirm New Password</label>
+                                        <div class="password-input-container">
+                                            <input type="password" class="form-control" id="settings-pwd-confirm" required placeholder="Confirm new password">
+                                            <button type="button" class="toggle-password-btn" data-target="settings-pwd-confirm" title="Show/Hide Password"><i class="ph ph-eye"></i></button>
+                                        </div>
+                                    </div>
+                                    <div class="form-actions" style="margin-top: 1.5rem;">
+                                        <button type="submit" class="primary-btn w-100">Update Password</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <div id="toast-container"></div>
+
+    <!-- Scripts -->
+    <script src="js/data.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>
