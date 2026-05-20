@@ -735,6 +735,14 @@ body {
     outline: none; 
     transition: var(--transition-fast); 
 }
+select.form-control {
+    color: var(--text-main);
+    background-color: #ffffff;
+}
+select.form-control option {
+    color: var(--text-main);
+    background-color: #ffffff;
+}
 .form-control::placeholder {
     color: rgba(15, 23, 42, 0.35);
 }
