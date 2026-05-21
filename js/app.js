@@ -18,7 +18,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Initialize defaults for missing fields (email, phone, etc.)
     mockData.team.forEach(emp => {
         if (!emp.email) {
-            emp.email = emp.name.toLowerCase().replace(/\s+/g, '.') + '@vedanco.com';
+            emp.email = emp.name.toLowerCase().replace(/\s+/g, '.') + '.vedanco@gmail.com';
         }
         if (!emp.phone) {
             emp.phone = '+91 98765 ' + String(10000 + Math.floor(Math.random() * 90000)).slice(-5);
@@ -50,21 +50,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // Authentication System
 function initLoginSystem() {
-    const loginSelect = document.getElementById('login-user-select');
+    const loginEmail = document.getElementById('login-email');
     const loginBtn = document.getElementById('login-btn');
     const loginScreen = document.getElementById('login-screen');
     const appContainer = document.getElementById('app-container');
     const logoutBtn = document.getElementById('user-profile-toggle');
 
-    if(!loginSelect || !loginBtn || !loginScreen) return;
-
-    // Build login dropdown
-    mockData.team.forEach(emp => {
-        const option = document.createElement('option');
-        option.value = emp.id;
-        option.textContent = `${emp.name} (${emp.role.toUpperCase()})`;
-        loginSelect.appendChild(option);
-    });
+    if(!loginEmail || !loginBtn || !loginScreen) return;
 
     function performLogin(emp) {
         mockData.currentUser = emp;
@@ -101,11 +93,11 @@ function initLoginSystem() {
     }
 
     loginBtn.addEventListener('click', () => {
-        const selectedId = parseInt(loginSelect.value);
-        const emp = mockData.team.find(e => e.id === selectedId);
+        const emailVal = loginEmail.value.trim().toLowerCase();
         const enteredPassword = document.getElementById('login-password').value;
-        if (enteredPassword !== emp.password) {
-            alert('Incorrect password! Hint: Admins use "admin", Employees use "[name]@vedanco" (e.g. astha@vedanco).');
+        const emp = mockData.team.find(e => e.email.toLowerCase() === emailVal);
+        if (!emp || enteredPassword !== emp.password) {
+            alert('Invalid Email ID or Password! Please try again.');
             return;
         }
         localStorage.setItem('vedanco_session', emp.id);
