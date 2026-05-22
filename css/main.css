@@ -1,11 +1,30 @@
-/* Custom CSS Variables - Modern Premium Glassmorphic Theme (Light Theme) */
+/* Custom CSS Variables - Modern Premium Glassmorphic Theme */
 :root {
     --bg-page: #f8fafc;
     --bg-sidebar: rgba(255, 255, 255, 0.75);
     --bg-main: rgba(255, 255, 255, 0.65);
+    --bg-solid: #ffffff;
+    --bg-form: rgba(255, 255, 255, 0.8);
     --text-main: #0f172a;
     --text-muted: #64748b;
     --border-color: rgba(15, 23, 42, 0.08);
+}
+
+:root[data-theme="dark"] {
+    --bg-page: #090d16;
+    --bg-sidebar: rgba(15, 23, 42, 0.75);
+    --bg-main: rgba(30, 41, 59, 0.45);
+    --bg-solid: #151d30;
+    --bg-form: rgba(30, 41, 59, 0.7);
+    --text-main: #f8fafc;
+    --text-muted: #94a3b8;
+    --border-color: rgba(248, 250, 252, 0.08);
+    --shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.3), 0 1px 2px 0 rgba(0, 0, 0, 0.2);
+    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.4), 0 2px 4px -1px rgba(0, 0, 0, 0.3);
+    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.5), 0 4px 6px -2px rgba(0, 0, 0, 0.4);
+}
+
+:root {
     
     /* Harmonized Premium Accents */
     --color-it: #4f46e5;         /* Indigo */
@@ -182,7 +201,7 @@ body {
     bottom: 100%; 
     left: 0; 
     right: 0; 
-    background: #ffffff; 
+    background: var(--bg-solid); 
     border: 1px solid var(--border-color); 
     border-radius: 0.5rem; 
     box-shadow: var(--shadow-lg); 
@@ -258,6 +277,8 @@ body {
     flex-shrink: 0; 
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
+    position: relative;
+    z-index: 100;
 }
 .header-search { 
     display: flex; 
@@ -682,7 +703,7 @@ body {
     opacity: 1; 
 }
 .modal-content { 
-    background: #ffffff; 
+    background: var(--bg-solid); 
     width: 100%; 
     max-width: 480px; 
     border-radius: 1rem; 
@@ -730,21 +751,22 @@ body {
     border-radius: 0.5rem; 
     font-family: inherit; 
     font-size: 0.85rem; 
-    background: rgba(255, 255, 255, 0.8);
+    background: var(--bg-form); 
     color: var(--text-main);
     outline: none; 
     transition: var(--transition-fast); 
 }
 select.form-control {
     color: var(--text-main);
-    background-color: #ffffff;
+    background-color: var(--bg-solid);
 }
 select.form-control option {
     color: var(--text-main);
-    background-color: #ffffff;
+    background-color: var(--bg-solid);
 }
 .form-control::placeholder {
-    color: rgba(15, 23, 42, 0.35);
+    color: var(--text-muted);
+    opacity: 0.5;
 }
 .form-control:focus { 
     border-color: var(--color-it); 

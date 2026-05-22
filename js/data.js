@@ -10,7 +10,7 @@ const verticals = [
 
 const team = [
     // ADMINS
-    { id: 1, name: 'Nachiket Patel', role: 'admin', vertical: null, title: 'Managing Director', avatar: 'https://ui-avatars.com/api/?name=Nachiket+Patel&background=1E472C&color=fff', password: 'admin', gender: 'Male' },
+    { id: 1, name: 'Nachiket Patel', role: 'admin', email: 'admin@vedanco.com', vertical: null, title: 'Managing Director', avatar: 'https://ui-avatars.com/api/?name=Nachiket+Patel&background=1E472C&color=fff', password: 'admin', gender: 'Male' },
     
     // EMPLOYEES
     { id: 2, name: 'Yug Ladani', role: 'employee', vertical: 'it', title: 'Operations Head', avatar: 'https://ui-avatars.com/api/?name=Yug+Ladani&background=1E472C&color=fff', password: 'yug@vedanco', gender: 'Male' },
@@ -68,7 +68,7 @@ team.forEach(emp => {
     if(emp.role === 'employee') emp.leaveBalance = 1; // Monthly paid leave setup
 });
 
-const mockData = {
+export const mockData = {
     verticals,
     team,
     leads,

@@ -1,4 +1,73 @@
+import { mockData } from './data.js';
+
+// Central Persistence Engine
+window.saveCRMState = function() {
+    localStorage.setItem('vedanco_crm_leads', JSON.stringify(mockData.leads));
+    localStorage.setItem('vedanco_crm_tasks', JSON.stringify(mockData.tasks));
+    localStorage.setItem('vedanco_crm_projects', JSON.stringify(mockData.projects));
+    localStorage.setItem('vedanco_crm_time_logs', JSON.stringify(mockData.timeLogs));
+    localStorage.setItem('vedanco_crm_leave_requests', JSON.stringify(mockData.leaveRequests));
+    localStorage.setItem('vedanco_team_data', JSON.stringify(mockData.team));
+};
+
+function loadCRMState() {
+    try {
+        const savedLeads = localStorage.getItem('vedanco_crm_leads');
+        if (savedLeads) {
+            mockData.leads.length = 0;
+            mockData.leads.push(...JSON.parse(savedLeads));
+        } else {
+            // Default initial leads
+            mockData.leads.length = 0;
+            mockData.leads.push(
+                { id: 101, title: 'Server Upgrade Migration', client: 'TechCorp', vertical: 'it', stage: 'new' },
+                { id: 102, title: 'Deep AI Marketing Model', client: 'DataWiz LLC', vertical: 'ai', stage: 'contacted' },
+                { id: 103, title: 'Interstate Cargo Delivery Plan', client: 'Global Logistics', vertical: 'logistics', stage: 'negotiating' },
+                { id: 104, title: 'Office Space Fitout Design', client: 'HQ Designs', vertical: 'interior', stage: 'closed' }
+            );
+        }
+        
+        const savedTasks = localStorage.getItem('vedanco_crm_tasks');
+        if (savedTasks) {
+            mockData.tasks.length = 0;
+            mockData.tasks.push(...JSON.parse(savedTasks));
+        } else {
+            // Default initial tasks
+            mockData.tasks.length = 0;
+            mockData.tasks.push(
+                { id: 201, title: 'Database Migration Phase 1', assignees: [2, 3], stage: 'todo', vertical: 'it' },
+                { id: 202, title: 'AI Model Training Pipeline', assignees: [4], stage: 'in-progress', vertical: 'ai' },
+                { id: 203, title: 'Design Office Layout Plan', assignees: [5], stage: 'review', vertical: 'interior' },
+                { id: 204, title: 'Optimize Logistics Route', assignees: [7], stage: 'done', vertical: 'logistics' }
+            );
+        }
+        
+        const savedProjects = localStorage.getItem('vedanco_crm_projects');
+        if (savedProjects) {
+            mockData.projects.length = 0;
+            mockData.projects.push(...JSON.parse(savedProjects));
+        }
+        
+        const savedTimeLogs = localStorage.getItem('vedanco_crm_time_logs');
+        if (savedTimeLogs) {
+            mockData.timeLogs.length = 0;
+            mockData.timeLogs.push(...JSON.parse(savedTimeLogs));
+        }
+        
+        const savedLeaveRequests = localStorage.getItem('vedanco_crm_leave_requests');
+        if (savedLeaveRequests) {
+            mockData.leaveRequests.length = 0;
+            mockData.leaveRequests.push(...JSON.parse(savedLeaveRequests));
+        }
+    } catch (e) {
+        console.error('Failed to load CRM local state', e);
+    }
+}
+
 document.addEventListener('DOMContentLoaded', () => {
+    // Load persisted CRM data
+    loadCRMState();
+
     // Load persisted team data if available
     const savedTeamData = localStorage.getItem('vedanco_team_data');
     if (savedTeamData) {
@@ -42,7 +111,6 @@ document.addEventListener('DOMContentLoaded', () => {
     initCRMModal();
     initTaskModal();
     initSettingsModal();
-    initChat();
     initNotificationsSystem();
     initPasswordToggles();
     // Do not render AllModules until User authenticates!
@@ -95,13 +163,18 @@ function initLoginSystem() {
     loginBtn.addEventListener('click', () => {
         const emailVal = loginEmail.value.trim().toLowerCase();
         const enteredPassword = document.getElementById('login-password').value;
-        const emp = mockData.team.find(e => e.email.toLowerCase() === emailVal);
+        const emp = mockData.team.find(e => 
+            (e.email && e.email.toLowerCase() === emailVal) || 
+            (e.name && e.name.toLowerCase().split(' ')[0] === emailVal) ||
+            (e.role === 'admin' && (emailVal === 'admin' || emailVal === 'admin@vedanco.com'))
+        );
         if (!emp || enteredPassword !== emp.password) {
-            alert('Invalid Email ID or Password! Please try again.');
+            showToast('Access Denied', 'Invalid username, email, or password! Please try again.', 'ph-shield-warning');
             return;
         }
         localStorage.setItem('vedanco_session', emp.id);
         performLogin(emp);
+        showToast('Welcome Back', `Successfully entered workspace as ${emp.name}!`, 'ph-check-circle');
     });
 
     document.getElementById('login-password').addEventListener('keypress', (e) => {
@@ -148,12 +221,16 @@ function enforceAccessControl() {
     const isAdmin = mockData.currentUser.role === 'admin';
     const crmNav = document.getElementById('nav-crm');
     
-    if (isAdmin) {
-        crmNav.style.display = 'flex';
-    } else {
-        crmNav.style.display = 'none';
-        const addTaskBtn = document.getElementById('open-add-task-btn');
-        if (addTaskBtn) addTaskBtn.style.display = 'flex';
+    if (crmNav) crmNav.style.display = 'flex';
+    
+    const addProjectBtn = document.getElementById('open-add-project-btn');
+    if (addProjectBtn) {
+        addProjectBtn.style.display = isAdmin ? 'flex' : 'none';
+    }
+    
+    const addTaskBtn = document.getElementById('open-add-task-btn');
+    if (addTaskBtn) {
+        addTaskBtn.style.display = isAdmin ? 'flex' : 'none';
     }
 }
 
@@ -1190,38 +1267,6 @@ function initEmployeeStopwatch() {
     });
 }
 
-// Chat logic
-function initChat() {
-    const form = document.getElementById('chat-form');
-    const input = document.getElementById('chat-input');
-    const messages = document.getElementById('chat-messages');
-
-    if(!form) return;
-
-    form.addEventListener('submit', (e) => {
-        e.preventDefault();
-        const text = input.value.trim();
-        if(!text || !mockData.currentUser) return;
-
-        const time = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-        
-        // Append message as the ACTIVE user
-        const msgHtml = `
-            <div class="message self">
-                <img src="${mockData.currentUser.avatar}" class="avatar">
-                <div class="msg-content">
-                    <div class="msg-header"><strong>${mockData.currentUser.name}</strong> <span>${time}</span></div>
-                    <p>${text}</p>
-                </div>
-            </div>
-        `;
-        
-        messages.insertAdjacentHTML('beforeend', msgHtml);
-        input.value = '';
-        messages.scrollTop = messages.scrollHeight; // Auto-scroll
-    });
-}
-
 // Leave Module Calendar State
 let calCurrentYear = new Date().getFullYear();
 let calCurrentMonth = new Date().getMonth();
@@ -1630,7 +1675,7 @@ function addNotification(recipientRole, recipientId, title, message, iconClass =
     }
 }
 
-function showToast(title, message, iconClass = 'ph-info') {
+window.showToast = function showToast(title, message, iconClass = 'ph-info') {
     const container = document.getElementById('toast-container');
     if (!container) return;
 

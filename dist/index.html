@@ -11,7 +11,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <!-- Phosphor Icons for minimalist iconography -->
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
-  <link rel="stylesheet" crossorigin href="/assets/index-CpJVHCQj.css">
+  <script type="module" crossorigin src="/assets/index-CgLYjHO7.js"></script>
+  <link rel="stylesheet" crossorigin href="/assets/index-wwVLqrFB.css">
 </head>
 <body>
     <!-- Login Screen Overlay -->
@@ -21,8 +22,8 @@
                 <img src="https://placehold.co/200x50/1e472c/FFF.png?text=Vedanco+Group" id="login-logo" alt="Vedanco Logo" class="logo-image" style="width:100%; max-width:200px; display:block;">
             </div>
             <div class="form-group" style="margin-bottom: 0.5rem;">
-                <label>Email Address</label>
-                <input type="email" class="form-control" id="login-email" style="padding: 0.75rem; font-size: 1rem;" placeholder="name.vedanco@gmail.com" required>
+                <label>Email Address / Username</label>
+                <input type="text" class="form-control" id="login-email" style="padding: 0.75rem; font-size: 1rem;" placeholder="admin or name.vedanco@gmail.com" required>
             </div>
             <div class="form-group">
                 <label>Password</label>
@@ -62,9 +63,6 @@
                 </a>
                 <a href="#time" class="nav-item" data-target="time" id="nav-time">
                     <i class="ph ph-timer"></i> Time Tracking
-                </a>
-                <a href="#chat" class="nav-item" data-target="chat" id="nav-chat">
-                    <i class="ph ph-chat-teardrop-dots"></i> Team Chat
                 </a>
             </nav>
             <div class="user-profile-container">
@@ -256,64 +254,6 @@
                         <!-- JS renders specific time tracking view per user -->
                     </div>
                 </section>
-
-                <!-- Chat View -->
-                <section id="chat" class="view">
-                    <header class="view-header">
-                        <div>
-                            <h1>Team Chat</h1>
-                            <p>Real-time team communication.</p>
-                        </div>
-                    </header>
-                    <div class="chat-container card">
-                        <div class="chat-sidebar">
-                            <div class="chat-section">
-                                <h3>Channels</h3>
-                                <ul class="chat-list">
-                                    <li class="active">#general</li>
-                                    <li>#logistics</li>
-                                    <li>#digital-marketing</li>
-                                    <li>#ai-projects</li>
-                                </ul>
-                            </div>
-                            <div class="chat-section">
-                                <h3>Direct Messages</h3>
-                                <ul class="chat-list">
-                                    <li><span class="status-dot green"></span> Alice Chen</li>
-                                    <li><span class="status-dot green"></span> Charlie Davis</li>
-                                    <li><span class="status-dot gray"></span> Grace Lee</li>
-                                </ul>
-                            </div>
-                        </div>
-                        <div class="chat-main">
-                            <div class="chat-header">
-                                <h2>#general</h2>
-                            </div>
-                            <div class="chat-messages" id="chat-messages">
-                                <div class="message">
-                                    <img src="https://ui-avatars.com/api/?name=Admin+User&background=0D8ABC&color=fff" class="avatar">
-                                    <div class="msg-content">
-                                        <div class="msg-header"><strong>Admin User</strong> <span>9:00 AM</span></div>
-                                        <p>Morning team! Let's get the Q2 priorities sorted today.</p>
-                                    </div>
-                                </div>
-                                <div class="message">
-                                    <img src="https://ui-avatars.com/api/?name=Alice+Chen&background=3B82F6&color=fff" class="avatar">
-                                    <div class="msg-content">
-                                        <div class="msg-header"><strong>Alice Chen</strong> <span>9:05 AM</span></div>
-                                        <p>On it! Setting up the task board now.</p>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="chat-input-area">
-                                <form id="chat-form">
-                                    <input type="text" id="chat-input" placeholder="Type your message in #general..." autocomplete="off">
-                                    <button type="submit" class="primary-btn"><i class="ph ph-paper-plane-right"></i> Send</button>
-                                </form>
-                            </div>
-                        </div>
-                    </div>
-                </section>
             </div>
 
             <!-- Global Modals -->
@@ -481,7 +421,5 @@
     <div id="toast-container"></div>
 
     <!-- Scripts -->
-    <script src="js/data.js"></script>
-    <script src="js/app.js"></script>
 </body>
 </html>

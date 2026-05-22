@@ -21,8 +21,8 @@
                 <img src="https://placehold.co/200x50/1e472c/FFF.png?text=Vedanco+Group" id="login-logo" alt="Vedanco Logo" class="logo-image" style="width:100%; max-width:200px; display:block;">
             </div>
             <div class="form-group" style="margin-bottom: 0.5rem;">
-                <label>Email Address</label>
-                <input type="email" class="form-control" id="login-email" style="padding: 0.75rem; font-size: 1rem;" placeholder="name.vedanco@gmail.com" required>
+                <label>Email Address / Username</label>
+                <input type="text" class="form-control" id="login-email" style="padding: 0.75rem; font-size: 1rem;" placeholder="admin or name.vedanco@gmail.com" required>
             </div>
             <div class="form-group">
                 <label>Password</label>
@@ -63,9 +63,6 @@
                 <a href="#time" class="nav-item" data-target="time" id="nav-time">
                     <i class="ph ph-timer"></i> Time Tracking
                 </a>
-                <a href="#chat" class="nav-item" data-target="chat" id="nav-chat">
-                    <i class="ph ph-chat-teardrop-dots"></i> Team Chat
-                </a>
             </nav>
             <div class="user-profile-container">
                 <div class="user-profile" id="user-profile-toggle" title="Click to Log Out">
@@ -83,6 +80,7 @@
         <main class="main-content">
             <!-- Header -->
             <header class="top-header">
+                <button class="action-btn hamburger-btn" id="sidebar-toggle-btn" title="Toggle Sidebar" style="display: none; margin-right: 0.75rem; font-size: 1.5rem; align-items: center; justify-content: center; background: none; border: none; cursor: pointer; color: var(--text-main);"><i class="ph ph-list"></i></button>
                 <div class="header-search">
                     <i class="ph ph-magnifying-glass"></i>
                     <input type="text" placeholder="Search across Vedanco Suite...">
@@ -109,6 +107,7 @@
                         </div>
                     </div>
                     <button class="action-btn" id="header-settings-btn" title="Profile Settings"><i class="ph ph-gear"></i></button>
+                    <button class="action-btn" id="theme-toggle-btn" title="Toggle Light/Dark Theme"><i class="ph ph-moon"></i></button>
                 </div>
             </header>
 
@@ -238,6 +237,7 @@
                             <h1 id="projects-title">Projects</h1>
                             <p id="projects-subtitle">Active Projects across all verticals.</p>
                         </div>
+                        <button class="primary-btn" id="open-add-project-btn" style="display: none;"><i class="ph ph-plus"></i> Add Project</button>
                     </header>
                     <div class="projects-grid">
                         <!-- Rendered by JS -->
@@ -254,64 +254,6 @@
                     </header>
                     <div class="time-content" id="time-content-container">
                         <!-- JS renders specific time tracking view per user -->
-                    </div>
-                </section>
-
-                <!-- Chat View -->
-                <section id="chat" class="view">
-                    <header class="view-header">
-                        <div>
-                            <h1>Team Chat</h1>
-                            <p>Real-time team communication.</p>
-                        </div>
-                    </header>
-                    <div class="chat-container card">
-                        <div class="chat-sidebar">
-                            <div class="chat-section">
-                                <h3>Channels</h3>
-                                <ul class="chat-list">
-                                    <li class="active">#general</li>
-                                    <li>#logistics</li>
-                                    <li>#digital-marketing</li>
-                                    <li>#ai-projects</li>
-                                </ul>
-                            </div>
-                            <div class="chat-section">
-                                <h3>Direct Messages</h3>
-                                <ul class="chat-list">
-                                    <li><span class="status-dot green"></span> Alice Chen</li>
-                                    <li><span class="status-dot green"></span> Charlie Davis</li>
-                                    <li><span class="status-dot gray"></span> Grace Lee</li>
-                                </ul>
-                            </div>
-                        </div>
-                        <div class="chat-main">
-                            <div class="chat-header">
-                                <h2>#general</h2>
-                            </div>
-                            <div class="chat-messages" id="chat-messages">
-                                <div class="message">
-                                    <img src="https://ui-avatars.com/api/?name=Admin+User&background=0D8ABC&color=fff" class="avatar">
-                                    <div class="msg-content">
-                                        <div class="msg-header"><strong>Admin User</strong> <span>9:00 AM</span></div>
-                                        <p>Morning team! Let's get the Q2 priorities sorted today.</p>
-                                    </div>
-                                </div>
-                                <div class="message">
-                                    <img src="https://ui-avatars.com/api/?name=Alice+Chen&background=3B82F6&color=fff" class="avatar">
-                                    <div class="msg-content">
-                                        <div class="msg-header"><strong>Alice Chen</strong> <span>9:05 AM</span></div>
-                                        <p>On it! Setting up the task board now.</p>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="chat-input-area">
-                                <form id="chat-form">
-                                    <input type="text" id="chat-input" placeholder="Type your message in #general..." autocomplete="off">
-                                    <button type="submit" class="primary-btn"><i class="ph ph-paper-plane-right"></i> Send</button>
-                                </form>
-                            </div>
-                        </div>
                     </div>
                 </section>
             </div>
@@ -353,18 +295,95 @@
 
             <!-- Add Task Modal -->
             <div class="modal-overlay" id="add-task-modal">
-                <div class="modal-content">
+                <div class="modal-content" style="max-width: 480px;">
                     <div class="modal-header">
-                        <h2>Add New Task</h2>
+                        <h2>Create Workspace Task</h2>
                         <button class="action-btn" id="close-task-btn"><i class="ph ph-x"></i></button>
                     </div>
-                    <form class="modal-form">
-                        <div class="form-group">
-                            <label>Task Title</label>
-                            <input type="text" class="form-control" id="form-task-title" placeholder="What needs to be done?">
+                    <form class="modal-form" id="add-task-form">
+                        <div class="form-group" style="margin-bottom: 1rem;">
+                            <label>Task Description / Title</label>
+                            <input type="text" class="form-control" id="form-task-title" placeholder="e.g. Migration of DB Phase 2" required>
+                        </div>
+                        <div class="form-group" style="margin-bottom: 1rem;" id="form-task-assignee-group">
+                            <label>Assign Team Member</label>
+                            <select class="form-control" id="form-task-assignee">
+                                <!-- Populated dynamically by JS -->
+                            </select>
+                        </div>
+                        <div class="form-group" style="margin-bottom: 1rem;">
+                            <label>Task Priority</label>
+                            <select class="form-control" id="form-task-priority">
+                                <option value="low">Low Priority</option>
+                                <option value="medium" selected>Medium Priority</option>
+                                <option value="high">High Priority</option>
+                            </select>
+                        </div>
+                        <div class="form-group" style="margin-bottom: 1rem;">
+                            <label>Service Vertical</label>
+                            <select class="form-control" id="form-task-vertical">
+                                <option value="it">IT</option>
+                                <option value="ai">AI Solutions</option>
+                                <option value="logistics">Logistics</option>
+                                <option value="interior">Interior</option>
+                                <option value="import">Import/Export</option>
+                                <option value="digital">Digital Mkt</option>
+                            </select>
+                        </div>
+                        <div class="form-group" style="margin-bottom: 1.25rem;">
+                            <label>Due Date</label>
+                            <input type="date" class="form-control" id="form-task-duedate">
                         </div>
                         <div class="form-actions">
-                            <button type="button" class="primary-btn w-100" id="submit-task-btn">Add Task</button>
+                            <button type="button" class="primary-btn w-100" id="submit-task-btn" style="padding: 0.75rem;">Create Task</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Add Project Modal -->
+            <div class="modal-overlay" id="add-project-modal">
+                <div class="modal-content" style="max-width: 480px;">
+                    <div class="modal-header">
+                        <h2>Create New Project</h2>
+                        <button class="action-btn" id="close-project-btn"><i class="ph ph-x"></i></button>
+                    </div>
+                    <form class="modal-form" id="add-project-form">
+                        <div class="form-group" style="margin-bottom: 1rem;">
+                            <label>Project Name</label>
+                            <input type="text" class="form-control" id="form-project-name" placeholder="e.g. Enterprise CRM Integration" required>
+                        </div>
+                        <div class="form-group" style="margin-bottom: 1rem;">
+                            <label>Client Name</label>
+                            <input type="text" class="form-control" id="form-project-client" placeholder="e.g. Acme Corp" required>
+                        </div>
+                        <div class="form-group" style="margin-bottom: 1rem;">
+                            <label>Service Vertical</label>
+                            <select class="form-control" id="form-project-vertical">
+                                <option value="it">IT</option>
+                                <option value="ai">AI Solutions</option>
+                                <option value="logistics">Logistics</option>
+                                <option value="interior">Interior</option>
+                                <option value="import">Import/Export</option>
+                                <option value="digital">Digital Mkt</option>
+                            </select>
+                        </div>
+                        <div class="form-group" style="margin-bottom: 1rem;">
+                            <label>Assign Team Members (Hold Ctrl/Cmd to select multiple)</label>
+                            <select class="form-control" id="form-project-assignees" multiple style="min-height: 100px;">
+                                <!-- Populated dynamically by JS -->
+                            </select>
+                        </div>
+                        <div class="form-group" style="margin-bottom: 1.25rem;">
+                            <label>Project Initial Status</label>
+                            <select class="form-control" id="form-project-status">
+                                <option value="On Track" selected>On Track</option>
+                                <option value="At Risk">At Risk</option>
+                                <option value="Off Track">Off Track</option>
+                            </select>
+                        </div>
+                        <div class="form-actions">
+                            <button type="button" class="primary-btn w-100" id="submit-project-btn" style="padding: 0.75rem;">Launch Project</button>
                         </div>
                     </form>
                 </div>
@@ -481,7 +500,6 @@
     <div id="toast-container"></div>
 
     <!-- Scripts -->
-    <script src="js/data.js"></script>
-    <script src="js/app.js"></script>
+    <script type="module" src="js/app.js"></script>
 </body>
 </html>
