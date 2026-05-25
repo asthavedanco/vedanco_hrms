@@ -11,8 +11,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <!-- Phosphor Icons for minimalist iconography -->
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
-  <script type="module" crossorigin src="/assets/index-CgLYjHO7.js"></script>
-  <link rel="stylesheet" crossorigin href="/assets/index-wwVLqrFB.css">
+  <script type="module" crossorigin src="/assets/index-DyWjKtEN.js"></script>
+  <link rel="stylesheet" crossorigin href="/assets/index-CuEVI9xb.css">
 </head>
 <body>
     <!-- Login Screen Overlay -->
@@ -81,6 +81,7 @@
         <main class="main-content">
             <!-- Header -->
             <header class="top-header">
+                <button class="action-btn hamburger-btn" id="sidebar-toggle-btn" title="Toggle Sidebar" style="display: none; margin-right: 0.75rem; font-size: 1.5rem; align-items: center; justify-content: center; background: none; border: none; cursor: pointer; color: var(--text-main);"><i class="ph ph-list"></i></button>
                 <div class="header-search">
                     <i class="ph ph-magnifying-glass"></i>
                     <input type="text" placeholder="Search across Vedanco Suite...">
@@ -107,6 +108,7 @@
                         </div>
                     </div>
                     <button class="action-btn" id="header-settings-btn" title="Profile Settings"><i class="ph ph-gear"></i></button>
+                    <button class="action-btn" id="theme-toggle-btn" title="Toggle Light/Dark Theme"><i class="ph ph-moon"></i></button>
                 </div>
             </header>
 
@@ -236,6 +238,7 @@
                             <h1 id="projects-title">Projects</h1>
                             <p id="projects-subtitle">Active Projects across all verticals.</p>
                         </div>
+                        <button class="primary-btn" id="open-add-project-btn" style="display: none;"><i class="ph ph-plus"></i> Add Project</button>
                     </header>
                     <div class="projects-grid">
                         <!-- Rendered by JS -->
@@ -293,18 +296,95 @@
 
             <!-- Add Task Modal -->
             <div class="modal-overlay" id="add-task-modal">
-                <div class="modal-content">
+                <div class="modal-content" style="max-width: 480px;">
                     <div class="modal-header">
-                        <h2>Add New Task</h2>
+                        <h2>Create Workspace Task</h2>
                         <button class="action-btn" id="close-task-btn"><i class="ph ph-x"></i></button>
                     </div>
-                    <form class="modal-form">
-                        <div class="form-group">
-                            <label>Task Title</label>
-                            <input type="text" class="form-control" id="form-task-title" placeholder="What needs to be done?">
+                    <form class="modal-form" id="add-task-form">
+                        <div class="form-group" style="margin-bottom: 1rem;">
+                            <label>Task Description / Title</label>
+                            <input type="text" class="form-control" id="form-task-title" placeholder="e.g. Migration of DB Phase 2" required>
+                        </div>
+                        <div class="form-group" style="margin-bottom: 1rem;" id="form-task-assignee-group">
+                            <label>Assign Team Member</label>
+                            <select class="form-control" id="form-task-assignee">
+                                <!-- Populated dynamically by JS -->
+                            </select>
+                        </div>
+                        <div class="form-group" style="margin-bottom: 1rem;">
+                            <label>Task Priority</label>
+                            <select class="form-control" id="form-task-priority">
+                                <option value="low">Low Priority</option>
+                                <option value="medium" selected>Medium Priority</option>
+                                <option value="high">High Priority</option>
+                            </select>
+                        </div>
+                        <div class="form-group" style="margin-bottom: 1rem;">
+                            <label>Service Vertical</label>
+                            <select class="form-control" id="form-task-vertical">
+                                <option value="it">IT</option>
+                                <option value="ai">AI Solutions</option>
+                                <option value="logistics">Logistics</option>
+                                <option value="interior">Interior</option>
+                                <option value="import">Import/Export</option>
+                                <option value="digital">Digital Mkt</option>
+                            </select>
+                        </div>
+                        <div class="form-group" style="margin-bottom: 1.25rem;">
+                            <label>Due Date</label>
+                            <input type="date" class="form-control" id="form-task-duedate">
                         </div>
                         <div class="form-actions">
-                            <button type="button" class="primary-btn w-100" id="submit-task-btn">Add Task</button>
+                            <button type="button" class="primary-btn w-100" id="submit-task-btn" style="padding: 0.75rem;">Create Task</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Add Project Modal -->
+            <div class="modal-overlay" id="add-project-modal">
+                <div class="modal-content" style="max-width: 480px;">
+                    <div class="modal-header">
+                        <h2>Create New Project</h2>
+                        <button class="action-btn" id="close-project-btn"><i class="ph ph-x"></i></button>
+                    </div>
+                    <form class="modal-form" id="add-project-form">
+                        <div class="form-group" style="margin-bottom: 1rem;">
+                            <label>Project Name</label>
+                            <input type="text" class="form-control" id="form-project-name" placeholder="e.g. Enterprise CRM Integration" required>
+                        </div>
+                        <div class="form-group" style="margin-bottom: 1rem;">
+                            <label>Client Name</label>
+                            <input type="text" class="form-control" id="form-project-client" placeholder="e.g. Acme Corp" required>
+                        </div>
+                        <div class="form-group" style="margin-bottom: 1rem;">
+                            <label>Service Vertical</label>
+                            <select class="form-control" id="form-project-vertical">
+                                <option value="it">IT</option>
+                                <option value="ai">AI Solutions</option>
+                                <option value="logistics">Logistics</option>
+                                <option value="interior">Interior</option>
+                                <option value="import">Import/Export</option>
+                                <option value="digital">Digital Mkt</option>
+                            </select>
+                        </div>
+                        <div class="form-group" style="margin-bottom: 1rem;">
+                            <label>Assign Team Members (Hold Ctrl/Cmd to select multiple)</label>
+                            <select class="form-control" id="form-project-assignees" multiple style="min-height: 100px;">
+                                <!-- Populated dynamically by JS -->
+                            </select>
+                        </div>
+                        <div class="form-group" style="margin-bottom: 1.25rem;">
+                            <label>Project Initial Status</label>
+                            <select class="form-control" id="form-project-status">
+                                <option value="On Track" selected>On Track</option>
+                                <option value="At Risk">At Risk</option>
+                                <option value="Off Track">Off Track</option>
+                            </select>
+                        </div>
+                        <div class="form-actions">
+                            <button type="button" class="primary-btn w-100" id="submit-project-btn" style="padding: 0.75rem;">Launch Project</button>
                         </div>
                     </form>
                 </div>

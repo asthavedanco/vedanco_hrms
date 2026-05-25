@@ -1,4 +1,73 @@
 import { mockData } from './data.js';
+import { io } from 'socket.io-client';
+
+const socket = io();
+
+// Simple deep compare to detect state changes
+function hashState(obj) {
+    return JSON.stringify(obj);
+}
+
+let lastStateHash = '';
+setInterval(() => {
+    if (!mockData.currentUser) return; // don't sync if not logged in
+    const stateToSync = {
+        leads: mockData.leads,
+        tasks: mockData.tasks,
+        projects: mockData.projects,
+        timeLogs: mockData.timeLogs,
+        leaveRequests: mockData.leaveRequests,
+        liveTracking: mockData.liveTracking,
+        team: mockData.team
+    };
+    const currentHash = hashState(stateToSync);
+    if (lastStateHash && lastStateHash !== currentHash && !window._isReceivingSync) {
+        socket.emit('broadcast_update', stateToSync);
+    }
+    lastStateHash = currentHash;
+}, 500);
+
+socket.on('receive_update', (p) => {
+    window._isReceivingSync = true;
+    if (p.leads) { mockData.leads.length = 0; mockData.leads.push(...p.leads); }
+    if (p.tasks) { mockData.tasks.length = 0; mockData.tasks.push(...p.tasks); }
+    if (p.projects) { mockData.projects.length = 0; mockData.projects.push(...p.projects); }
+    if (p.timeLogs) { mockData.timeLogs.length = 0; mockData.timeLogs.push(...p.timeLogs); }
+    if (p.leaveRequests) { mockData.leaveRequests.length = 0; mockData.leaveRequests.push(...p.leaveRequests); }
+    if (p.team) {
+        p.team.forEach(updatedEmp => {
+            const existing = mockData.team.find(e => e.id === updatedEmp.id);
+            if (existing) Object.assign(existing, updatedEmp);
+        });
+    }
+    if (p.liveTracking) {
+        Object.assign(mockData.liveTracking, p.liveTracking);
+    }
+
+    lastStateHash = hashState({
+        leads: mockData.leads,
+        tasks: mockData.tasks,
+        projects: mockData.projects,
+        timeLogs: mockData.timeLogs,
+        leaveRequests: mockData.leaveRequests,
+        liveTracking: mockData.liveTracking,
+        team: mockData.team
+    });
+
+    if (typeof renderAllModules === 'function') {
+        renderAllModules();
+        const activeView = document.querySelector('.view.active-view');
+        if (activeView) {
+            if (activeView.id === 'dashboard') renderDashboard();
+            if (activeView.id === 'crm') renderCRM();
+            if (activeView.id === 'tasks') renderTasks();
+            if (activeView.id === 'projects') renderProjects();
+            // renderTimeTracking is already called by renderAllModules but triggers live updates, which is fine
+        }
+    }
+    
+    setTimeout(() => { window._isReceivingSync = false; }, 100);
+});
 
 // Central Persistence Engine
 window.saveCRMState = function() {
@@ -1076,6 +1145,11 @@ function initEmployeeStopwatch() {
             live.seconds = activeTimer === 'work' ? workSeconds : (activeTimer === 'lunch' ? lunchSeconds : (activeTimer === 'tea' ? teaSeconds : 0));
 
             if (activeTimer !== 'paused' || workSeconds > 0 || lunchSeconds > 0 || teaSeconds > 0) {
+                if (!localStorage.getItem('vedanco_timer_login_time')) {
+                    localStorage.setItem('vedanco_timer_login_time', new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}));
+                }
+                live.loginTime = localStorage.getItem('vedanco_timer_login_time');
+
                 if (!mockData.currentUser.startedTracking) {
                     mockData.currentUser.startedTracking = true;
                     let startedTrackingIds = JSON.parse(localStorage.getItem('vedanco_started_tracking_ids') || '[]');
@@ -1137,9 +1211,11 @@ function initEmployeeStopwatch() {
     }
 
     function startTicking() {
-        if (!window.timerInterval) {
-            window.timerInterval = setInterval(() => {
-                if (activeTimer === 'work') {
+        if (window.timerInterval) {
+            clearInterval(window.timerInterval);
+        }
+        window.timerInterval = setInterval(() => {
+            if (activeTimer === 'work') {
                     workSeconds++;
                 } else if (activeTimer === 'lunch') {
                     lunchSeconds++;
@@ -1230,6 +1306,7 @@ function initEmployeeStopwatch() {
             workSeconds = 0;
             lunchSeconds = 0;
             teaSeconds = 0;
+            localStorage.removeItem('vedanco_timer_login_time');
             updateDisplay();
         }
     });
@@ -1260,12 +1337,13 @@ function initEmployeeStopwatch() {
         workSeconds = 0;
         lunchSeconds = 0;
         teaSeconds = 0;
+        localStorage.removeItem('vedanco_timer_login_time');
         updateDisplay();
         
         renderTimeTracking(); // Refresh UI to update history list and total hours
         renderDashboard(); // Fix global stats silently
     });
-}
+
 
 // Leave Module Calendar State
 let calCurrentYear = new Date().getFullYear();
